@@ -1,0 +1,313 @@
+[
+  {
+    "question": "How many districts are there in Kerala?",
+    "answer": "Kerala has 14 districts.",
+    "entity": "Kerala",
+    "entity_type": "state",
+    "role": null,
+    "intent": "district_count",
+    "tags": ["kerala", "districts", "geography"],
+    "aliases": [
+      "How many districts does Kerala have?",
+      "How many districts in Kerala?",
+      "Number of districts in Kerala?",
+      "Districts in Kerala",
+      "how many district in kerala",
+      "kerala district count"
+    ]
+  },
+  {
+    "question": "Who is the Governor of India?",
+    "answer": "India does not have a Governor. Governors are appointed for individual states and certain Union Territories. At the national level, India has a President and a Prime Minister.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": "governor",
+    "intent": "role_clarification",
+    "tags": ["india", "politics", "clarification", "governor"],
+    "aliases": [
+      "Who is India's Governor?",
+      "Does India have a Governor?",
+      "Governor of India",
+      "who governor indian",
+      "who is the governor of indian"
+    ]
+  },
+  {
+    "question": "Who is the Chief Minister of India?",
+    "answer": "India does not have a single Chief Minister. Chief Ministers head individual states and some Union Territories. At the national level, India has a Prime Minister.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": "chief_minister",
+    "intent": "role_clarification",
+    "tags": ["india", "politics", "clarification", "cm"],
+    "aliases": [
+      "Who is the CM of India?",
+      "Does India have a CM?",
+      "CM of India",
+      "Chief Minister of India",
+      "who is cm of india",
+      "who is india cm"
+    ]
+  },
+  {
+    "question": "Who is the Prime Minister of Kerala?",
+    "answer": "Kerala does not have a Prime Minister. Kerala is a state of India and has a Chief Minister. The Prime Minister is the head of India's central government.",
+    "entity": "Kerala",
+    "entity_type": "state",
+    "role": "prime_minister",
+    "intent": "role_clarification",
+    "tags": ["kerala", "politics", "clarification", "pm"],
+    "aliases": [
+      "Who is Kerala's Prime Minister?",
+      "Does Kerala have a PM?",
+      "PM of Kerala",
+      "Prime Minister of Kerala"
+    ]
+  },
+  {
+    "question": "Who is the President of Kerala?",
+    "answer": "Kerala does not have a President. Kerala is an Indian state, so it has a Governor as its constitutional head and a Chief Minister as the head of government. The President of India is the head of state for the entire country.",
+    "entity": "Kerala",
+    "entity_type": "state",
+    "role": "president",
+    "intent": "role_clarification",
+    "tags": ["kerala", "politics", "clarification"],
+    "aliases": [
+      "Who is Kerala's President?",
+      "Does Kerala have a President?",
+      "President of Kerala"
+    ]
+  },
+  {
+    "question": "Who is the Governor of Kerala?",
+    "answer": "The Governor of Kerala is Rajendra Vishwanath Arlekar (as of 2026), who has held the post since January 2025. The Governor is the constitutional head of the state. He also took on additional charge as Governor of Tamil Nadu in March 2026.",
+    "entity": "Kerala",
+    "entity_type": "state",
+    "role": "governor",
+    "intent": "role_holder",
+    "tags": ["kerala", "politics", "governor"],
+    "aliases": [
+      "Who is Kerala's Governor?",
+      "Governor of Kerala"
+    ]
+  },
+  {
+    "question": "Who is the Prime Minister of India?",
+    "answer": "The Prime Minister of India is Narendra Modi (as of 2026). He has been serving as Prime Minister since May 2014 and was sworn in for his third consecutive term on 9 June 2024.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": "prime_minister",
+    "intent": "role_holder",
+    "tags": ["india", "politics", "government"],
+    "aliases": [
+      "Who is India's PM?",
+      "Who leads India?",
+      "Who is the head of the Indian government?",
+      "who is prime minster indian",
+      "who is the pm of india",
+      "who is india prime minister"
+    ]
+  },
+  {
+    "question": "Who is the Chief Minister of Kerala?",
+    "answer": "The Chief Minister of Kerala is V. D. Satheesan (as of 2026), who assumed office on 18 May 2026, succeeding Pinarayi Vijayan.",
+    "entity": "Kerala",
+    "entity_type": "state",
+    "role": "chief_minister",
+    "intent": "role_holder",
+    "tags": ["india", "kerala", "politics"],
+    "aliases": [
+      "Who is Kerala CM?",
+      "Who leads Kerala's state government?",
+      "Who is the CM of Kerala?",
+      "who is cm kerala",
+      "kerala cm",
+      "CM of Kerala"
+    ]
+  },
+  {
+    "question": "Who is the Chief Minister of Tamil Nadu?",
+    "answer": "The Chief Minister of Tamil Nadu is C. Joseph Vijay (as of 2026), leader of the Tamilaga Vettri Kazhagam (TVK) party. He was sworn in on 10 May 2026 after TVK's win in the 2026 Tamil Nadu Assembly election, succeeding M. K. Stalin.",
+    "entity": "Tamil Nadu",
+    "entity_type": "state",
+    "role": "chief_minister",
+    "intent": "role_holder",
+    "tags": ["india", "tamil-nadu", "politics"],
+    "aliases": [
+      "Who is Tamil Nadu CM?",
+      "Who leads Tamil Nadu's state government?"
+    ]
+  },
+  {
+    "question": "Who is the Chief Minister of Karnataka?",
+    "answer": "The Chief Minister of Karnataka is D. K. Shivakumar (as of 2026), of the Indian National Congress. He was sworn in on 3 June 2026, succeeding Siddaramaiah under a leadership rotation agreed within the Congress party.",
+    "entity": "Karnataka",
+    "entity_type": "state",
+    "role": "chief_minister",
+    "intent": "role_holder",
+    "tags": ["india", "karnataka", "politics"],
+    "aliases": [
+      "Who is Karnataka CM?",
+      "Who leads Karnataka's state government?"
+    ]
+  },
+  {
+    "question": "What is the capital of India?",
+    "answer": "The capital of India is New Delhi. It serves as the seat of all three branches of the Government of India.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "capital",
+    "tags": ["india", "geography"],
+    "aliases": [
+      "What is India's capital city?",
+      "Which city is the capital of India?"
+    ]
+  },
+  {
+    "question": "What is the capital of Kerala?",
+    "answer": "The capital of Kerala is Thiruvananthapuram (also known as Trivandrum).",
+    "entity": "Kerala",
+    "entity_type": "state",
+    "role": null,
+    "intent": "capital",
+    "tags": ["india", "kerala", "geography"],
+    "aliases": [
+      "What is Kerala's capital?",
+      "Which city is the capital of Kerala?"
+    ]
+  },
+  {
+    "question": "Who is the President of India?",
+    "answer": "The President of India is Droupadi Murmu (as of 2026). She assumed office on 25 July 2022, becoming the first tribal woman and the second woman to hold the office.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": "president",
+    "intent": "role_holder",
+    "tags": ["india", "politics", "government"],
+    "aliases": [
+      "Who is India's president?",
+      "Who is the head of state of India?"
+    ]
+  },
+  {
+    "question": "How many states are there in India?",
+    "answer": "India has 28 states and 8 Union Territories (as of 2026).",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "count",
+    "tags": ["india", "geography", "government"],
+    "aliases": [
+      "How many states does India have?",
+      "What is the number of states in India?",
+      "How many Indian states are there?"
+    ]
+  },
+  {
+    "question": "What is the national language of India?",
+    "answer": "India does not have a single 'national language'. Hindi (in Devanagari script) is the official language of the Union Government, and English is the subsidiary official language. India recognizes 22 scheduled languages under the Eighth Schedule of the Constitution.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "definition",
+    "tags": ["india", "language", "clarification"],
+    "aliases": [
+      "What language does India speak?",
+      "Is Hindi the national language of India?",
+      "What are the official languages of India?"
+    ]
+  },
+  {
+    "question": "What is the currency of India?",
+    "answer": "The currency of India is the Indian Rupee (INR), symbolized by ₹. It is issued and managed by the Reserve Bank of India (RBI).",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "definition",
+    "tags": ["india", "economy"],
+    "aliases": [
+      "What is India's currency?",
+      "What is the money used in India?"
+    ]
+  },
+  {
+    "question": "Who wrote the Indian national anthem?",
+    "answer": "The Indian national anthem 'Jana Gana Mana' was written by Rabindranath Tagore. It was first sung on 27 December 1911 and adopted as the national anthem on 24 January 1950.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "general",
+    "tags": ["india", "culture", "history"],
+    "aliases": [
+      "Who composed Jana Gana Mana?",
+      "Who is the author of the Indian national anthem?"
+    ]
+  },
+  {
+    "question": "What is the largest state in India by area?",
+    "answer": "Rajasthan is the largest state in India by area, covering approximately 342,239 square kilometers.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "general",
+    "tags": ["india", "geography"],
+    "aliases": [
+      "Which is the biggest state in India?",
+      "What is India's largest state?"
+    ]
+  },
+  {
+    "question": "What is the population of India?",
+    "answer": "India has a population of approximately 1.48 billion people (as of 2026), making it the most populous country in the world, having surpassed China in 2023.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "count",
+    "tags": ["india", "demographics"],
+    "aliases": [
+      "How many people live in India?",
+      "What is India's population?"
+    ]
+  },
+  {
+    "question": "When did India gain independence?",
+    "answer": "India gained independence from British colonial rule on 15 August 1947. The Indian Independence Act 1947 was passed by the British Parliament, transferring legislative sovereignty to the Indian Constituent Assembly.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "historical",
+    "tags": ["india", "history"],
+    "aliases": [
+      "When is India's independence day?",
+      "What year did India become independent?",
+      "When was India's freedom?"
+    ]
+  },
+  {
+    "question": "Who was the first Prime Minister of India?",
+    "answer": "Jawaharlal Nehru was the first Prime Minister of India. He served from 15 August 1947 until his death on 27 May 1964.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": "prime_minister",
+    "intent": "historical",
+    "tags": ["india", "politics", "history"],
+    "aliases": [
+      "Who was India's first PM?",
+      "Who became the first PM of India?"
+    ]
+  },
+  {
+    "question": "What is the national animal of India?",
+    "answer": "The national animal of India is the Bengal Tiger (Panthera tigris tigris). It was designated as the national animal in April 1973.",
+    "entity": "India",
+    "entity_type": "country",
+    "role": null,
+    "intent": "general",
+    "tags": ["india", "culture", "nature"],
+    "aliases": [
+      "Which animal is India's national symbol?",
+      "What is India's national animal?"
+    ]
+  }
+]

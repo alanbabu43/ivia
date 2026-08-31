@@ -1,0 +1,74 @@
+# ─────────────────────────────────────────────────────────────
+# Python & Bytecode
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ─────────────────────────────────────────────────────────────
+# Virtual Environments
+# ─────────────────────────────────────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# ─────────────────────────────────────────────────────────────
+# Secrets & Environment Variables (CRITICAL: Never commit .env)
+# ─────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ─────────────────────────────────────────────────────────────
+# Vector Databases & Generated Storage
+# ─────────────────────────────────────────────────────────────
+db/
+faiss_db/
+chroma_db/
+*.chroma
+*.faiss
+*.pkl
+
+# ─────────────────────────────────────────────────────────────
+# Temporary / Test Artifacts
+# ─────────────────────────────────────────────────────────────
+test_sample.pdf
+test_doc.pdf
+hello.txt
+scratch/
+*.log
+
+# ─────────────────────────────────────────────────────────────
+# IDEs, Editors & OS Files
+# ─────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini

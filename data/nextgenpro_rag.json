@@ -1,0 +1,457 @@
+{
+  "org_name": "NextGenPro",
+  "dataset_name": "nextgenpro_knowledge_base",
+  "version": "1.0",
+  "documents": [
+    {
+      "id": "general_001",
+      "category": "General Information",
+      "intent": "what_is_nextgenpro",
+      "question": "What is NextGenPro?",
+      "variations": ["what is nextgenpro", "tell me about nextgenpro", "about nextgenpro"],
+      "answer": "NextGenPro is an Innovation & Edupark organization based in Palarivattom, Kochi, Kerala, India. NextGenPro combines innovation-focused technology work with educational (edupark) activities, and its staff cover a wide range of specializations including administration, accounting and logistics, content creation, SEO, data science, AI and data science, data analytics, web development, mobile app development, cybersecurity, robotics, robotics and IoT, and Montessori education.",
+      "keywords": ["nextgenpro", "overview", "innovation", "edupark"]
+    },
+    {
+      "id": "general_002",
+      "category": "General Information",
+      "intent": "location",
+      "question": "Where is NextGenPro located?",
+      "variations": ["where is nextgenpro located", "nextgenpro location", "nextgenpro address"],
+      "answer": "NextGenPro is located in Palarivattom, Kochi, Kerala, India.",
+      "keywords": ["location", "address", "palarivattom", "kochi", "kerala"]
+    },
+    {
+      "id": "general_003",
+      "category": "General Information",
+      "intent": "staff_count",
+      "question": "How many staff members are there at NextGenPro?",
+      "variations": ["how many staff members are there at nextgenpro", "how many employees work at nextgenpro", "how many people work at nextgenpro", "total staff nextgenpro"],
+      "answer": "NextGenPro has 22 staff members in total, including the owners and founders. This count spans all departments at the organization, from leadership to technical and administrative roles.",
+      "keywords": ["staff count", "22", "employees", "headcount"]
+    },
+    {
+      "id": "general_004",
+      "category": "General Information",
+      "intent": "main_areas",
+      "question": "What are the main areas represented at NextGenPro?",
+      "variations": ["what are the main areas represented at nextgenpro", "what departments does nextgenpro have", "nextgenpro departments"],
+      "answer": "NextGenPro's 22 staff members work across the following areas: administration; accounting and logistics; content creation; SEO; data science; AI and data science; data analytics; web development; mobile app development; cybersecurity; robotics; robotics and IoT; and Montessori education. Together these areas reflect NextGenPro's dual focus as an Innovation & Edupark organization, combining technology services with early-childhood educational programs.",
+      "keywords": ["departments", "areas", "specializations"]
+    },
+    {
+      "id": "leadership_001",
+      "category": "Leadership",
+      "intent": "founder_ceo",
+      "question": "Who is the Founder and CEO of NextGenPro?",
+      "variations": ["who is the founder and ceo of nextgenpro", "who is nextgenpro's ceo", "nextgenpro founder"],
+      "answer": "Anish is the Founder and CEO of NextGenPro. As Founder & CEO, Anish holds the top leadership position at the organization.",
+      "keywords": ["anish", "founder", "ceo", "leadership"]
+    },
+    {
+      "id": "leadership_002",
+      "category": "Leadership",
+      "intent": "owner",
+      "question": "Who is the owner of NextGenPro?",
+      "variations": ["who is the owner of nextgenpro", "who owns nextgenpro"],
+      "answer": "NextGenPro's ownership and leadership group is made up of its founders. Anish is the Founder & CEO, and Gokul is the Co-Founder & Managing Director. Together, Anish and Gokul lead NextGenPro as its founding owners.",
+      "keywords": ["owner", "anish", "gokul", "founders"]
+    },
+    {
+      "id": "leadership_003",
+      "category": "Leadership",
+      "intent": "cofounder_md",
+      "question": "Who is the Co-Founder and Managing Director of NextGenPro?",
+      "variations": ["who is the co-founder and managing director of nextgenpro", "who is nextgenpro's co-founder"],
+      "answer": "Gokul is the Co-Founder and Managing Director of NextGenPro.",
+      "keywords": ["gokul", "co-founder", "managing director"]
+    },
+    {
+      "id": "leadership_004",
+      "category": "Leadership",
+      "intent": "managing_director",
+      "question": "Who is the Managing Director of NextGenPro?",
+      "variations": ["who is the managing director of nextgenpro", "nextgenpro managing director"],
+      "answer": "Gokul is the Managing Director of NextGenPro, a role he holds alongside being Co-Founder of the organization.",
+      "keywords": ["gokul", "managing director"]
+    },
+    {
+      "id": "leadership_005",
+      "category": "Leadership",
+      "intent": "cto",
+      "question": "Who is the CTO of NextGenPro?",
+      "variations": ["who is the cto of nextgenpro", "nextgenpro chief technology officer"],
+      "answer": "Abin is the CTO (Chief Technology Officer) of NextGenPro, responsible for the organization's technology leadership.",
+      "keywords": ["abin", "cto", "chief technology officer"]
+    },
+    {
+      "id": "leadership_006",
+      "category": "Leadership",
+      "intent": "coo",
+      "question": "Who is the COO of NextGenPro?",
+      "variations": ["who is the coo of nextgenpro", "nextgenpro chief operating officer"],
+      "answer": "Roshan is the COO (Chief Operating Officer) of NextGenPro, responsible for overseeing the organization's operations.",
+      "keywords": ["roshan", "coo", "chief operating officer"]
+    },
+    {
+      "id": "leadership_007",
+      "category": "Leadership",
+      "intent": "cgo",
+      "question": "Who are the CGOs at NextGenPro?",
+      "variations": ["who are the cgos at nextgenpro", "nextgenpro chief growth officer"],
+      "answer": "Adoni and Ephrem are listed as CGOs (Chief Growth Officers) at NextGenPro.",
+      "keywords": ["adoni", "ephrem", "cgo", "chief growth officer"]
+    },
+    {
+      "id": "leadership_008",
+      "category": "Leadership",
+      "intent": "anish_role",
+      "question": "What does Anish do at NextGenPro?",
+      "variations": ["what does anish do at nextgenpro", "anish's role at nextgenpro"],
+      "answer": "Anish is the Founder & CEO of NextGenPro, leading the organization overall.",
+      "keywords": ["anish", "role", "ceo"]
+    },
+    {
+      "id": "leadership_009",
+      "category": "Leadership",
+      "intent": "gokul_role",
+      "question": "What does Gokul do at NextGenPro?",
+      "variations": ["what does gokul do at nextgenpro", "gokul's role at nextgenpro"],
+      "answer": "Gokul is the Co-Founder & Managing Director of NextGenPro, sharing top leadership responsibilities with Anish.",
+      "keywords": ["gokul", "role", "managing director"]
+    },
+    {
+      "id": "leadership_010",
+      "category": "Leadership",
+      "intent": "abin_role",
+      "question": "What does Abin do at NextGenPro?",
+      "variations": ["what does abin do at nextgenpro", "abin's role at nextgenpro"],
+      "answer": "Abin is the CTO of NextGenPro, overseeing technology strategy and execution.",
+      "keywords": ["abin", "role", "cto"]
+    },
+    {
+      "id": "leadership_011",
+      "category": "Leadership",
+      "intent": "roshan_role",
+      "question": "What does Roshan do at NextGenPro?",
+      "variations": ["what does roshan do at nextgenpro", "roshan's role at nextgenpro"],
+      "answer": "Roshan is the COO of NextGenPro, overseeing day-to-day operations.",
+      "keywords": ["roshan", "role", "coo"]
+    },
+    {
+      "id": "leadership_012",
+      "category": "Leadership",
+      "intent": "adoni_role",
+      "question": "What does Adoni do at NextGenPro?",
+      "variations": ["what does adoni do at nextgenpro", "adoni's role at nextgenpro"],
+      "answer": "Adoni is a CGO (Chief Growth Officer) at NextGenPro.",
+      "keywords": ["adoni", "role", "cgo"]
+    },
+    {
+      "id": "leadership_013",
+      "category": "Leadership",
+      "intent": "ephrem_role",
+      "question": "What does Ephrem do at NextGenPro?",
+      "variations": ["what does ephrem do at nextgenpro", "ephrem's role at nextgenpro"],
+      "answer": "Ephrem is a CGO (Chief Growth Officer) at NextGenPro.",
+      "keywords": ["ephrem", "role", "cgo"]
+    },
+    {
+      "id": "dept_001",
+      "category": "Staff and Roles by Department",
+      "intent": "content_creator",
+      "question": "Who is the content creator at NextGenPro?",
+      "variations": ["who is the content creator at nextgenpro", "nextgenpro content creator"],
+      "answer": "Akshay is the Content Creator at NextGenPro, responsible for producing content for the organization.",
+      "keywords": ["akshay", "content creator", "content creation"]
+    },
+    {
+      "id": "dept_002",
+      "category": "Staff and Roles by Department",
+      "intent": "cybersecurity_staff",
+      "question": "Who works in cybersecurity at NextGenPro?",
+      "variations": ["who works in cybersecurity at nextgenpro", "who is the cybersecurity staff", "nextgenpro cybersecurity"],
+      "answer": "Amal works in Cybersecurity at NextGenPro, handling security-related responsibilities for the organization.",
+      "keywords": ["amal", "cybersecurity", "security"]
+    },
+    {
+      "id": "dept_003",
+      "category": "Staff and Roles by Department",
+      "intent": "data_analyst",
+      "question": "Who is the data analyst at NextGenPro?",
+      "variations": ["who is the data analyst at nextgenpro", "who works in data analytics at nextgenpro"],
+      "answer": "Nandhu and Roshni are the Data Analysts at NextGenPro, both working within the organization's Data Analytics function.",
+      "keywords": ["nandhu", "roshni", "data analyst", "data analytics"]
+    },
+    {
+      "id": "dept_004",
+      "category": "Staff and Roles by Department",
+      "intent": "robotics_staff",
+      "question": "Who works in robotics at NextGenPro?",
+      "variations": ["who works in robotics at nextgenpro", "nextgenpro robotics staff"],
+      "answer": "Abhirami works in Robotics at NextGenPro.",
+      "keywords": ["abhirami", "robotics"]
+    },
+    {
+      "id": "dept_005",
+      "category": "Staff and Roles by Department",
+      "intent": "robotics_iot_staff",
+      "question": "Who works in robotics and IoT at NextGenPro?",
+      "variations": ["who works in robotics and iot at nextgenpro", "nextgenpro robotics and iot staff"],
+      "answer": "Akash works in Robotics & IoT at NextGenPro, a role distinct from the general Robotics function held by Abhirami.",
+      "keywords": ["akash", "robotics", "iot"]
+    },
+    {
+      "id": "dept_006",
+      "category": "Staff and Roles by Department",
+      "intent": "montessori_staff",
+      "question": "Who works in Montessori at NextGenPro?",
+      "variations": ["who works in montessori at nextgenpro", "nextgenpro montessori staff"],
+      "answer": "Blessy and Sijna are listed under Montessori at NextGenPro, reflecting the organization's Edupark / early-childhood education activities.",
+      "keywords": ["blessy", "sijna", "montessori", "edupark"]
+    },
+    {
+      "id": "dept_007",
+      "category": "Staff and Roles by Department",
+      "intent": "mobile_app_developer",
+      "question": "Who is the mobile app developer at NextGenPro?",
+      "variations": ["who is the mobile app developer at nextgenpro", "nextgenpro mobile app developer"],
+      "answer": "Midhun is the Mobile App Developer at NextGenPro.",
+      "keywords": ["midhun", "mobile app developer", "mobile development"]
+    },
+    {
+      "id": "dept_008",
+      "category": "Staff and Roles by Department",
+      "intent": "web_development_staff",
+      "question": "Who works in web development at NextGenPro?",
+      "variations": ["who works in web development at nextgenpro", "nextgenpro web development staff"],
+      "answer": "Alan and Aswathy work in Web Development at NextGenPro.",
+      "keywords": ["alan", "aswathy", "web development"]
+    },
+    {
+      "id": "dept_009",
+      "category": "Staff and Roles by Department",
+      "intent": "administrator",
+      "question": "Who is the administrator at NextGenPro?",
+      "variations": ["who is the administrator at nextgenpro", "nextgenpro administrator"],
+      "answer": "Akhila is the Administrator at NextGenPro, handling administrative responsibilities for the organization.",
+      "keywords": ["akhila", "administrator", "administration"]
+    },
+    {
+      "id": "dept_010",
+      "category": "Staff and Roles by Department",
+      "intent": "accounting_logistics_staff",
+      "question": "Who works in accounting and logistics at NextGenPro?",
+      "variations": ["who works in accounting and logistics at nextgenpro", "nextgenpro accounting and logistics staff"],
+      "answer": "Neel works in Accounting & Logistics at NextGenPro.",
+      "keywords": ["neel", "accounting", "logistics"]
+    },
+    {
+      "id": "dept_011",
+      "category": "Staff and Roles by Department",
+      "intent": "seo_expert",
+      "question": "Who is the SEO expert at NextGenPro?",
+      "variations": ["who is the seo expert at nextgenpro", "nextgenpro seo expert"],
+      "answer": "Mecha is the SEO Expert at NextGenPro, responsible for search engine optimization work.",
+      "keywords": ["mecha", "seo", "search engine optimization"]
+    },
+    {
+      "id": "dept_012",
+      "category": "Staff and Roles by Department",
+      "intent": "data_science_staff",
+      "question": "Who works in data science at NextGenPro?",
+      "variations": ["who works in data science at nextgenpro", "nextgenpro data science staff"],
+      "answer": "Amrutha is listed under Data Science at NextGenPro.",
+      "keywords": ["amrutha", "data science"]
+    },
+    {
+      "id": "dept_013",
+      "category": "Staff and Roles by Department",
+      "intent": "ai_data_science_staff",
+      "question": "Who works in AI and Data Science at NextGenPro?",
+      "variations": ["who works in ai and data science at nextgenpro", "nextgenpro ai and data science staff"],
+      "answer": "Hasim works in AI & Data Science at NextGenPro, a role distinct from the general Data Science role held by Amrutha.",
+      "keywords": ["hasim", "ai", "data science"]
+    },
+    {
+      "id": "profile_001",
+      "category": "Individual Staff Profiles",
+      "intent": "akshay_role",
+      "question": "What is Akshay's role at NextGenPro?",
+      "variations": ["what is akshay's role at nextgenpro", "akshay's job at nextgenpro"],
+      "answer": "Akshay is a Content Creator at NextGenPro.",
+      "keywords": ["akshay", "content creator"]
+    },
+    {
+      "id": "profile_002",
+      "category": "Individual Staff Profiles",
+      "intent": "amal_role",
+      "question": "What is Amal's role at NextGenPro?",
+      "variations": ["what is amal's role at nextgenpro", "amal's job at nextgenpro"],
+      "answer": "Amal works in Cybersecurity at NextGenPro.",
+      "keywords": ["amal", "cybersecurity"]
+    },
+    {
+      "id": "profile_003",
+      "category": "Individual Staff Profiles",
+      "intent": "nandhu_role",
+      "question": "What is Nandhu's role at NextGenPro?",
+      "variations": ["what is nandhu's role at nextgenpro", "nandhu's job at nextgenpro"],
+      "answer": "Nandhu is a Data Analyst at NextGenPro, working in the Data Analytics function.",
+      "keywords": ["nandhu", "data analyst"]
+    },
+    {
+      "id": "profile_004",
+      "category": "Individual Staff Profiles",
+      "intent": "abhirami_role",
+      "question": "What is Abhirami's role at NextGenPro?",
+      "variations": ["what is abhirami's role at nextgenpro", "abhirami's job at nextgenpro"],
+      "answer": "Abhirami works in Robotics at NextGenPro.",
+      "keywords": ["abhirami", "robotics"]
+    },
+    {
+      "id": "profile_005",
+      "category": "Individual Staff Profiles",
+      "intent": "akash_role",
+      "question": "What is Akash's role at NextGenPro?",
+      "variations": ["what is akash's role at nextgenpro", "akash's job at nextgenpro"],
+      "answer": "Akash works in Robotics & IoT at NextGenPro.",
+      "keywords": ["akash", "robotics", "iot"]
+    },
+    {
+      "id": "profile_006",
+      "category": "Individual Staff Profiles",
+      "intent": "sijna_role",
+      "question": "What is Sijna's role at NextGenPro?",
+      "variations": ["what is sijna's role at nextgenpro", "sijna's job at nextgenpro"],
+      "answer": "Sijna works in Montessori at NextGenPro.",
+      "keywords": ["sijna", "montessori"]
+    },
+    {
+      "id": "profile_007",
+      "category": "Individual Staff Profiles",
+      "intent": "blessy_role",
+      "question": "What is Blessy's role at NextGenPro?",
+      "variations": ["what is blessy's role at nextgenpro", "blessy's job at nextgenpro"],
+      "answer": "Blessy is listed under Montessori at NextGenPro.",
+      "keywords": ["blessy", "montessori"]
+    },
+    {
+      "id": "profile_008",
+      "category": "Individual Staff Profiles",
+      "intent": "midhun_role",
+      "question": "What is Midhun's role at NextGenPro?",
+      "variations": ["what is midhun's role at nextgenpro", "midhun's job at nextgenpro"],
+      "answer": "Midhun is a Mobile App Developer at NextGenPro.",
+      "keywords": ["midhun", "mobile app developer"]
+    },
+    {
+      "id": "profile_009",
+      "category": "Individual Staff Profiles",
+      "intent": "alan_role",
+      "question": "What is Alan's role at NextGenPro?",
+      "variations": ["what is alan's role at nextgenpro", "alan's job at nextgenpro"],
+      "answer": "Alan works in Web Development at NextGenPro.",
+      "keywords": ["alan", "web development"]
+    },
+    {
+      "id": "profile_010",
+      "category": "Individual Staff Profiles",
+      "intent": "aswathy_role",
+      "question": "What is Aswathy's role at NextGenPro?",
+      "variations": ["what is aswathy's role at nextgenpro", "aswathy's job at nextgenpro"],
+      "answer": "Aswathy works in Web Development at NextGenPro.",
+      "keywords": ["aswathy", "web development"]
+    },
+    {
+      "id": "profile_011",
+      "category": "Individual Staff Profiles",
+      "intent": "roshni_role",
+      "question": "What is Roshni's role at NextGenPro?",
+      "variations": ["what is roshni's role at nextgenpro", "roshni's job at nextgenpro"],
+      "answer": "Roshni is a Data Analyst at NextGenPro, working in the Data Analytics function.",
+      "keywords": ["roshni", "data analyst"]
+    },
+    {
+      "id": "profile_012",
+      "category": "Individual Staff Profiles",
+      "intent": "hasim_role",
+      "question": "What is Hasim's role at NextGenPro?",
+      "variations": ["what is hasim's role at nextgenpro", "hasim's job at nextgenpro"],
+      "answer": "Hasim works in AI & Data Science at NextGenPro.",
+      "keywords": ["hasim", "ai", "data science"]
+    },
+    {
+      "id": "profile_013",
+      "category": "Individual Staff Profiles",
+      "intent": "amrutha_role",
+      "question": "What is Amrutha's role at NextGenPro?",
+      "variations": ["what is amrutha's role at nextgenpro", "amrutha's job at nextgenpro"],
+      "answer": "Amrutha works in Data Science at NextGenPro.",
+      "keywords": ["amrutha", "data science"]
+    },
+    {
+      "id": "profile_014",
+      "category": "Individual Staff Profiles",
+      "intent": "mecha_role",
+      "question": "What is Mecha's role at NextGenPro?",
+      "variations": ["what is mecha's role at nextgenpro", "mecha's job at nextgenpro"],
+      "answer": "Mecha is an SEO Expert at NextGenPro.",
+      "keywords": ["mecha", "seo"]
+    },
+    {
+      "id": "profile_015",
+      "category": "Individual Staff Profiles",
+      "intent": "akhila_role",
+      "question": "What is Akhila's role at NextGenPro?",
+      "variations": ["what is akhila's role at nextgenpro", "akhila's job at nextgenpro"],
+      "answer": "Akhila is the Administrator at NextGenPro.",
+      "keywords": ["akhila", "administrator"]
+    },
+    {
+      "id": "profile_016",
+      "category": "Individual Staff Profiles",
+      "intent": "neel_role",
+      "question": "What is Neel's role at NextGenPro?",
+      "variations": ["what is neel's role at nextgenpro", "neel's job at nextgenpro"],
+      "answer": "Neel works in Accounting & Logistics at NextGenPro.",
+      "keywords": ["neel", "accounting", "logistics"]
+    },
+    {
+      "id": "directory_001",
+      "category": "Complete Staff Directory",
+      "intent": "staff_list_names",
+      "question": "Who are the 22 staff members at NextGenPro?",
+      "variations": ["who are the 22 staff members at nextgenpro", "list all nextgenpro staff names"],
+      "answer": "The 22 staff members at NextGenPro are: Anish, Gokul, Abin, Roshan, Adoni, Ephrem, Akhila, Neel, Mecha, Amrutha, Hasim, Roshni, Alan, Aswathy, Midhun, Akshay, Amal, Nandhu, Abhirami, Akash, Blessy, and Sijna.",
+      "keywords": ["staff list", "names", "directory", "all staff"]
+    },
+    {
+      "id": "directory_002",
+      "category": "Complete Staff Directory",
+      "intent": "staff_list_with_roles",
+      "question": "Can you list all NextGenPro staff members with their roles?",
+      "variations": ["can you list all nextgenpro staff members with their roles", "full nextgenpro staff directory with roles"],
+      "answer": "The full NextGenPro staff directory with roles is as follows: Anish \u2014 Founder & CEO; Gokul \u2014 Co-Founder & Managing Director; Abin \u2014 CTO; Roshan \u2014 COO; Adoni \u2014 CGO; Ephrem \u2014 CGO; Akhila \u2014 Administrator; Neel \u2014 Accounting & Logistics; Mecha \u2014 SEO Expert; Amrutha \u2014 Data Science; Hasim \u2014 AI & Data Science; Roshni \u2014 Data Analyst; Alan \u2014 Web Development; Aswathy \u2014 Web Development; Midhun \u2014 Mobile App Developer; Akshay \u2014 Content Creator; Amal \u2014 Cybersecurity; Nandhu \u2014 Data Analyst; Abhirami \u2014 Robotics; Akash \u2014 Robotics & IoT; Blessy \u2014 Montessori; Sijna \u2014 Montessori.",
+      "keywords": ["staff directory", "roles", "full list"]
+    },
+    {
+      "id": "directory_003",
+      "category": "Complete Staff Directory",
+      "intent": "leadership_count",
+      "question": "How many leadership roles are there at NextGenPro and who holds them?",
+      "variations": ["how many leadership roles are there at nextgenpro", "who holds leadership roles at nextgenpro"],
+      "answer": "NextGenPro has six leadership roles: Founder & CEO (Anish), Co-Founder & Managing Director (Gokul), CTO (Abin), COO (Roshan), and two CGO positions (Adoni and Ephrem).",
+      "keywords": ["leadership", "count", "roles"]
+    },
+    {
+      "id": "directory_004",
+      "category": "Complete Staff Directory",
+      "intent": "multi_staff_departments",
+      "question": "Which departments at NextGenPro have more than one staff member?",
+      "variations": ["which departments at nextgenpro have more than one staff member", "departments with multiple staff at nextgenpro"],
+      "answer": "Three departments at NextGenPro have more than one staff member: Data Analytics (Nandhu and Roshni), Web Development (Alan and Aswathy), and Montessori (Blessy and Sijna). All other listed departments \u2014 administration, accounting and logistics, content creation, SEO, data science, AI and data science, mobile app development, cybersecurity, robotics, and robotics and IoT \u2014 each have one dedicated staff member.",
+      "keywords": ["departments", "multiple staff", "team size"]
+    }
+  ]
+}
