@@ -271,6 +271,42 @@ def validate_entity_role(
     return True, None
 
 
+def is_time_sensitive_query(text: str) -> bool:
+    """
+    Detects if the query involves time-sensitive or rapidly changing facts.
+    Keywords: current, latest, today, now, recent, this year, 2026, new, updated, etc.
+    """
+    if not text:
+        return False
+    t_lower = text.lower()
+    time_patterns = [
+        r"\bcurrent\b", r"\blatest\b", r"\btoday\b", r"\bnow\b", r"\brecent\b",
+        r"\bthis\s+year\b", r"\b2026\b", r"\bnew\b", r"\bupdated\b",
+        r"\bwho\s+is\s+currently\b", r"\bwhat\s+is\s+the\s+latest\b",
+        r"\bwho\s+won\b", r"\bweather\b", r"\bscore\b", r"\bstock\b",
+        r"\byesterday\b", r"\btomorrow\b", r"\bthis\s+month\b"
+    ]
+    return any(re.search(pat, t_lower) for pat in time_patterns)
+
+
+def is_private_domain_query(text: str) -> bool:
+    """
+    Detects if the query asks about private/internal organization knowledge:
+    NextGenPro, IVIA, internal staff, internal departments, leadership, etc.
+    """
+    if not text:
+        return False
+    t_lower = text.lower()
+    private_patterns = [
+        r"\bnextgenpro\b", r"\bivia\b", r"\bdepartments?\b",
+        r"\bstaff\b", r"\bemployees?\b", r"\bcompany\s+services\b",
+        r"\binternal\s+documents?\b", r"\bcompany\s+leadership\b",
+        r"\beducation\s+park\b", r"\bceo\b", r"\bcto\b", r"\bcoo\b", r"\bcgo\b",
+        r"\bfounder\b"
+    ]
+    return any(re.search(pat, t_lower) for pat in private_patterns)
+
+
 def analyze_question(raw_question: str) -> Dict[str, Any]:
     """
     Full Question Analysis Pipeline.
@@ -282,6 +318,8 @@ def analyze_question(raw_question: str) -> Dict[str, Any]:
       4. extract_year()            — find historical year if any
       5. detect_intent()           — classify question type
       6. validate_entity_role()    — check role vs entity_type validity
+      7. is_time_sensitive_query() — detect temporal/freshness requirements
+      8. is_private_domain_query() — detect private organizational queries
 
     Returns:
       dict with keys:
@@ -294,12 +332,16 @@ def analyze_question(raw_question: str) -> Dict[str, Any]:
         - intent               (str)
         - is_valid_combination (bool)
         - correction_response  (str | None)  → non-None means return this immediately
+        - is_time_sensitive    (bool)
+        - is_private_domain    (bool)
     """
     normalized = normalize_text(raw_question)
     entity, entity_type = detect_entity(normalized)
     role = detect_role(normalized)
     year = extract_year(normalized)
     intent = detect_intent(normalized)
+    time_sensitive = is_time_sensitive_query(normalized)
+    private_domain = is_private_domain_query(normalized)
 
     is_valid, correction = validate_entity_role(entity, entity_type, role)
 
@@ -312,5 +354,8 @@ def analyze_question(raw_question: str) -> Dict[str, Any]:
         "year": year,
         "intent": intent,
         "is_valid_combination": is_valid,
-        "correction_response": correction
+        "correction_response": correction,
+        "is_time_sensitive": time_sensitive,
+        "is_private_domain": private_domain
     }
+

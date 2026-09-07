@@ -29,6 +29,7 @@ Usage:
     results = qa_kb.search("Who is Kerala CM?")
 """
 
+import glob
 import json
 import os
 import sys
@@ -147,11 +148,14 @@ class QAKnowledgeBase:
             except (json.JSONDecodeError, IOError) as e:
                 print(f"[qa_knowledge] Error loading '{self.json_path}': {e}", file=sys.stderr)
 
-        # Check for ivia_greetings_rag.json in data/
-        greetings_file = os.path.join(os.path.dirname(self.json_path) or "data", "ivia_greetings_rag.json")
-        if os.path.exists(greetings_file) and os.path.abspath(greetings_file) != os.path.abspath(self.json_path):
+        # Check for supplemental dataset files in data/ (e.g. ivia_greetings_rag.json, nextgenpro_rag.json)
+        data_dir = os.path.dirname(self.json_path) or "data"
+        supplemental_files = glob.glob(os.path.join(data_dir, "*_rag.json"))
+        for supp_file in sorted(supplemental_files):
+            if os.path.abspath(supp_file) == os.path.abspath(self.json_path):
+                continue
             try:
-                with open(greetings_file, "r", encoding="utf-8") as f:
+                with open(supp_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     docs = data.get("documents", []) if isinstance(data, dict) else (data if isinstance(data, list) else [])
                     added = 0
@@ -162,14 +166,14 @@ class QAKnowledgeBase:
                             "answer": d.get("answer", ""),
                             "aliases": aliases,
                             "intent": d.get("intent", ""),
-                            "category": d.get("category", "greetings"),
-                            "tags": d.get("keywords", ["greeting", "ivia"])
+                            "category": d.get("category", os.path.splitext(os.path.basename(supp_file))[0]),
+                            "tags": d.get("keywords", ["knowledge_base", "ivia"])
                         }
                         self.entries.append(entry)
                         added += 1
-                    print(f"[qa_knowledge] Loaded {added} greeting entries from '{greetings_file}'.")
+                    print(f"[qa_knowledge] Loaded {added} entries from supplemental file '{supp_file}'.")
             except Exception as e:
-                print(f"[qa_knowledge] Error loading '{greetings_file}': {e}", file=sys.stderr)
+                print(f"[qa_knowledge] Error loading '{supp_file}': {e}", file=sys.stderr)
 
     def _save_entries(self) -> None:
         """Persists the current entries list to the JSON file on disk."""

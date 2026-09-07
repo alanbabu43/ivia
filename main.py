@@ -1,8 +1,8 @@
 """
 main.py — FastAPI Backend for RAG PDF Chatbot
 =============================================
-Exposes the RAG + Ollama PDF chatbot pipeline via a REST API for mobile (Flutter)
-and external web clients.
+Exposes the RAG + Ollama PDF chatbot pipeline via a REST API for web, mobile,
+and external application clients.
 
 Endpoints:
   - GET  /health     : Health check & service status.
@@ -12,11 +12,12 @@ Endpoints:
 
 import io
 import os
+import time
 import tempfile
 from typing import Optional, List, Dict, Any
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, status
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, File, UploadFile, HTTPException, status, Request
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
@@ -28,12 +29,13 @@ from rag import RAGSystem
 
 # Initialize FastAPI application
 app = FastAPI(
+    
     title="BOR RAG Chatbot API",
     description="FastAPI backend wrapping RAG + Ollama PDF ingestion and chat pipeline",
     version="1.0.0"
 )
 
-# Enable CORS for Flutter mobile/web clients on local network
+# Enable CORS for frontend, web, and mobile clients on local network
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -76,16 +78,21 @@ init_llm()
 
 class ChatRequest(BaseModel):
     model_config = {
+        "extra": "ignore",
         "json_schema_extra": {
             "example": {
                 "query": "Who is the Chief Minister of Kerala?",
                 "session_id": "session_123"
-                # mode is intentionally omitted — system auto-detects based on internet connectivity
             }
         }
     }
 
-    query: str = Field(..., description="User query / question")
+    query: Optional[str] = Field(None, description="User query / question")
+    question: Optional[str] = Field(None, description="Alias for query")
+    message: Optional[str] = Field(None, description="Alias for query")
+    prompt: Optional[str] = Field(None, description="Alias for query")
+    text: Optional[str] = Field(None, description="Alias for query")
+    messages: Optional[List[Dict[str, Any]]] = Field(None, description="OpenAI-compatible messages list")
     mode: Optional[str] = Field(
         None,
         description=(
@@ -98,6 +105,8 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     answer: str = Field(..., description="Generated answer from search orchestrator")
+    response: Optional[str] = Field(None, description="Alias for answer")
+    message: Optional[str] = Field(None, description="Alias for answer")
     source_type: str = Field("none", description="Source layer: 'pdf', 'ollama', 'web_scraping', 'tavily', or 'none'")
     mode: str = Field("offline", description="Operational search mode actually used ('offline' or 'online')")
     confidence: float = Field(0.0, description="Confidence score of accepted answer (0.0 to 1.0)")
@@ -124,9 +133,9 @@ class HealthResponse(BaseModel):
 # API Endpoints
 # ─────────────────────────────────────────────────────────────────────────────
 
-@app.get("/", include_in_schema=False)
+@app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
 async def root():
-    """Redirect root path to interactive API documentation (/docs)."""
+    """Redirect root path to interactive API documentation (/docs), supporting HEAD probes."""
     return RedirectResponse(url="/docs")
 
 
@@ -209,16 +218,27 @@ async def upload_pdf(file: UploadFile = File(...)):
 
 
 @app.post("/chat", response_model=ChatResponse, tags=["Chat"])
+@app.post("/query", response_model=ChatResponse, tags=["Chat"])
+@app.post("/rag/query", response_model=ChatResponse, tags=["Chat"])
+@app.post("/rag/chat", response_model=ChatResponse, tags=["Chat"])
 async def chat(request: ChatRequest):
     """
     Process a user query using the 5-Layer Intelligent RAG Search Orchestrator.
+    Supports /chat, /query, /rag/query, and /rag/chat endpoints.
     """
-    # 1. Validate empty or whitespace query
-    query = request.query.strip() if request.query else ""
+    # 1. Resolve query from query, question, message, prompt, text, or messages list
+    query = request.query or request.question or request.message or request.prompt or request.text
+    if not query and request.messages:
+        for m in reversed(request.messages):
+            if isinstance(m, dict) and m.get("role") == "user":
+                query = m.get("content", "")
+                break
+    query = (query or "").strip()
+
     if not query:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Query string cannot be empty."
+            detail="Query string cannot be empty. Please provide 'query', 'question', 'message', or 'prompt'."
         )
 
     # 2. Ensure LLM is loaded
@@ -259,6 +279,8 @@ async def chat(request: ChatRequest):
 
         return ChatResponse(
             answer=answer_text,
+            response=answer_text,
+            message=answer_text,
             source_type=source_type,
             mode=used_mode,
             confidence=confidence,
@@ -277,3 +299,32 @@ async def chat(request: ChatRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error generating answer: {str(e)}"
         )
+
+
+@app.post("/v1/chat/completions", tags=["Chat"])
+async def chat_completions(request: ChatRequest):
+    """
+    OpenAI-compatible chat completions endpoint for Flutter voice/chat clients.
+    """
+    resp = await chat(request)
+    return {
+        "id": f"chatcmpl-{int(time.time())}",
+        "object": "chat.completion",
+        "created": int(time.time()),
+        "model": OLLAMA_MODEL,
+        "choices": [
+            {
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": resp.answer
+                },
+                "finish_reason": "stop"
+            }
+        ],
+        "answer": resp.answer,
+        "source_type": resp.source_type,
+        "mode": resp.mode,
+        "confidence": resp.confidence,
+        "sources": resp.sources
+    }

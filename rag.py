@@ -673,7 +673,9 @@ class RAGSystem:
                 question=english_question,
                 partial_context=qa_context,
                 backend=self.backend_name,
-                model_name=self.model_name
+                model_name=self.model_name,
+                is_time_sensitive=analysis.get("is_time_sensitive", False),
+                is_private_domain=analysis.get("is_private_domain", False)
             )
 
             if is_confident and ollama_ans:
@@ -694,7 +696,7 @@ class RAGSystem:
 
             # If user explicitly specified offline mode, we must not go online
             if raw_mode == "offline":
-                fallback = "I could not find enough reliable information in the offline knowledge base to answer this question accurately."
+                fallback = "I couldn't find a sufficiently reliable answer to that question in the offline knowledge base."
                 if is_ml:
                     fallback = translate_text(fallback, target_lang="ml", source_lang="en", llm=self.llm)
                 return {
@@ -710,7 +712,7 @@ class RAGSystem:
         # Check internet connectivity before online layers
         if not is_online():
             print(f"[rag] Internet connectivity unavailable. Cannot execute online layers.")
-            fallback = "I could not find enough reliable information in the local knowledge base, and internet connection is currently unavailable."
+            fallback = "I couldn't find a sufficiently reliable answer to that question, and internet connection is currently unavailable."
             if is_ml:
                 fallback = translate_text(fallback, target_lang="ml", source_lang="en", llm=self.llm)
             return {
@@ -731,7 +733,14 @@ class RAGSystem:
 
         if google_results:
             print(f"[rag] [Layer 3] Google Search returned {len(google_results)} URLs. Proceeding to Layer 4 (Web Scraping)...")
-            scraped_data = self.web_scraper.scrape_multiple(google_results, max_pages=3)
+            # NOTE: `query=english_question` passed through so the scraper can prioritize
+            # paragraphs actually relevant to the question instead of naively truncating
+            # to the first N characters of each page (fixes inconsistent Layer 4 answers).
+            scraped_data = self.web_scraper.scrape_multiple(
+                google_results,
+                max_pages=3,
+                query=english_question
+            )
             scraped_context = scraped_data.get("formatted_context", "")
             scraped_docs = scraped_data.get("scraped_docs", [])
 
@@ -827,7 +836,7 @@ class RAGSystem:
         # ALL LAYERS FAILED
         # =========================================================================
         print(f"[rag] All 5 search layers failed to find reliable information.")
-        fallback = "I could not find enough reliable information to answer this question accurately."
+        fallback = "I couldn't find a sufficiently reliable answer to that question."
         if is_ml:
             fallback = translate_text(fallback, target_lang="ml", source_lang="en", llm=self.llm)
         return {
@@ -926,4 +935,4 @@ class RAGSystem:
 
     def reload_qa_kb(self):
         """Reloads the Q&A knowledge base from disk."""
-        self.qa_kb.reload()
+        self.qa_kb.reload() 

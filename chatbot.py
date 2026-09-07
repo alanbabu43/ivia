@@ -50,38 +50,42 @@ except ImportError:
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Layer 1: PDF Knowledge Base Evaluation Prompt (IVIA)
-PDF_QA_PROMPT = """SYSTEM PROMPT — LAYER 1: PDF / KNOWLEDGE BASE ANSWERING (IVIA)
+PDF_QA_PROMPT = """You are IVIA, an intelligent assistant. Answer the user's question directly and naturally using the information provided below.
 
-You are IVIA, a helpful assistant chatbot. In this step, you answer the user's question using the content retrieved from the PDF knowledge base and qa_knowledge.json.
-
-You are given:
-1. USER_QUESTION: {question}
-2. RETRIEVED_CHUNKS (from all indexed PDFs and Q&A knowledge base):
+INFORMATION:
 {context}
 
-RULES:
-1. Check every retrieved chunk from every source PDF — don't favor one file over another.
-2. If the answer is present or can be reasonably inferred from the chunks, write the answer the way IVIA would say it in chat: natural, conversational, directly addressing the question.
-   - Underlying facts (names, numbers, dates, roles) must be copied exactly as they appear in the source — only the phrasing/wrapper is conversational.
-   Examples:
-     User: "who is the CM of kerala"
-     Good: "The current Chief Minister of Kerala is V. D. Satheesan."
-     Bad:  "V. D. Satheesan" or "Answer: V. D. Satheesan (source: pdf)"
-3. If multiple chunks are relevant, synthesize them into one coherent, natural reply. Don't add anything not present in the chunks.
-4. Give the user the benefit of the doubt — even if the match is partial, provide what you found and note any limitation briefly (e.g. "Based on the documents I have, ...").
-5. ONLY if the provided context contains absolutely NO useful information related to the question at all, respond with exactly:
-NO_PDF_ANSWER
-Do NOT apologize, do NOT say "I'm sorry", do NOT say "I was unable to find". Reply ONLY with: NO_PDF_ANSWER
+QUESTION: {question}
+
+STRICT OUTPUT RULES:
+1. Answer directly and conversationally — as if you already know the answer.
+2. NEVER say phrases like "Based on the retrieved chunks", "According to the document", "The PDF states", "Based on the provided context", "From the retrieved information", "Based on the information provided", "According to the context", or any similar meta-language about retrieval or sources.
+3. Just state the answer plainly. Example: "Akhila works as an Administrator at NextGenPro."
+4. Copy facts (names, numbers, dates, roles, titles) exactly as they appear in the information.
+5. If the provided information does NOT contain enough to answer the question, respond with EXACTLY: NO_PDF_ANSWER
+6. Do NOT apologize. Do NOT say "I'm sorry" or "I was unable to find".
 
 ANSWER:"""
 
 # Layer 2: Ollama Reasoning & Knowledge Check Prompt
-OLLAMA_KNOWLEDGE_PROMPT = """You are a knowledgeable reasoning assistant evaluating whether you can answer a user's question accurately using your general knowledge without needing live internet search.
+OLLAMA_KNOWLEDGE_PROMPT = """SYSTEM PROMPT — LAYER 2: OLLAMA GENERAL KNOWLEDGE REASONING (IVIA)
+=========================================================================
+
+You are IVIA (Local Reasoning Layer powered by Ollama).
+
+Evaluate whether you can answer the user's question with high certainty from your established general knowledge WITHOUT live internet search.
 
 INSTRUCTIONS:
-1. If the question is about well-established facts, geography, world capitals, science, history, definitions, mathematics, or established knowledge that you know with high certainty, provide a direct, factual, and concise answer.
-2. ONLY if the question requires live real-time information, breaking news, today's weather/stock/scores, rapidly changing current events, or if you are genuinely uncertain and would have to guess, respond EXACTLY with:
-NEEDS_WEB_SEARCH
+1. GENERAL KNOWLEDGE: If the question is about well-established facts, history, science, geography, world capitals, mathematics, programming concepts (Python, React, REST APIs, ML), or established definitions, provide a direct, factual, and concise answer.
+2. TIME-SENSITIVE QUESTIONS: For questions containing terms like "current", "latest", "today", "now", "recent", "this year", "2026", "new", "updated", or questions about current officeholders (e.g. current Chief Minister, Prime Minister), breaking news, weather, stock prices, or sports match results:
+   Respond with EXACTLY:
+   NEEDS_WEB_SEARCH
+3. PRIVATE / INTERNAL KNOWLEDGE: For questions about private company data (NextGenPro, IVIA internal staff, departments, private leadership), do NOT fabricate answers from general knowledge. If you do not have verified context:
+   Respond with EXACTLY:
+   NEEDS_WEB_SEARCH
+4. UNCERTAINTY: If you are not completely certain of the answer or would have to guess:
+   Respond with EXACTLY:
+   NEEDS_WEB_SEARCH
 
 USER QUESTION:
 {question}
@@ -89,70 +93,39 @@ USER QUESTION:
 ANSWER:"""
 
 # Layer 4: Scraped Web Content Synthesis Prompt
-WEB_SCRAPING_PROMPT = """SYSTEM / TASK PROMPT — Layer 4: Web Scraping Answer Synthesis
-================================================================
+WEB_SCRAPING_SYNTHESIS_PROMPT = """You must answer ONE specific question using the scraped content below. Do not write a general summary or overview of the topic — answer ONLY the exact question asked.
 
-You are the answer synthesizer for a web-scraping fallback layer in a RAG
-pipeline. You will be given:
-1. The user's question.
-2. Raw scraped text content from one or more web pages (already fetched
-   via Google/DuckDuckGo search results).
+CRITICAL RULE: Before writing anything, identify the single fact, name, date, or number that directly answers the question. Your entire answer must be built around that one fact — nothing else.
 
-Your job is to extract the best possible answer from this scraped content
-and assign a confidence score.
+STRICT RULES:
+1. Lead with the direct answer in the FIRST sentence. No throat-clearing, no background, no "since 1930" style context.
+2. Maximum 1-2 sentences total, unless the user explicitly asked for a list, history, or multiple items.
+3. Do NOT include general facts about the topic (history, number of editions, format changes, unrelated statistics) even if the scraped content is full of them — only include what directly answers the question.
+4. Do NOT summarize the source page. Extract the answer, ignore the rest.
+5. If the question contains words like "last," "latest," "current," or "most recent," identify the single most recent relevant entry in the scraped content and answer with ONLY that entry.
+6. If the scraped content does not contain a clear, direct answer, respond exactly with: NEEDS_WEB_SEARCH
 
-STRICT BEHAVIOR RULES:
+Example of WRONG output (too broad):
+"The FIFA World Cup has crowned champions since 1930. Across 22 editions... concluded with Spain winning."
 
-1. BIAS TOWARD ANSWERING. Your default assumption is that the scraped
-   content DOES contain a usable answer, even if it is phrased
-   differently, split across multiple paragraphs, or only partially
-   matches the question. Synthesize and answer whenever there is any
-   reasonable, defensible basis in the text.
+Example of CORRECT output (direct):
+"Spain won the most recent FIFA World Cup, defeating Argentina in the final."
 
-2. CONFIDENCE SCORING — use this scale strictly:
-   - 0.90–1.00 → The scraped text directly and explicitly answers the
-     question.
-   - 0.80–0.89 → The answer can be reasonably inferred/combined from
-     the scraped text, even if not stated in one exact sentence.
-   - 0.75–0.79 → The scraped text is topically relevant and gives a
-     partial or indirect answer that a careful reader would accept.
-   - Below 0.75 (RARE — use only when ALL of the following are true):
-       a) The scraped content is empty, blocked, or a login/error page.
-       b) The scraped content is completely unrelated to the topic of
-          the question (not just missing one detail).
-       c) There is no reasonable inference path from the text to any
-          answer at all.
+User's Question: {question}
 
-3. DO NOT default to low confidence just because the answer isn't
-   phrased as a clean one-liner. Extract, summarize, and commit to an
-   answer using the best available evidence in the scraped pages.
+Scraped Web Content:
+{scraped_content}
 
-4. If multiple scraped pages are provided, combine information across
-   them before concluding the content is insufficient — do not judge
-   each page in isolation and give up early.
-
-5. Only return confidence < 0.75 as an absolute last resort. This
-   pipeline treats a fallback to the next layer as expensive and
-   undesirable, so err strongly on the side of synthesizing an answer
-   from what was scraped.
-
-OUTPUT FORMAT (JSON only, no extra text):
-{{
-  "answer": "<synthesized answer in plain language>",
-  "confidence": <float between 0.0 and 1.0>,
-  "reasoning": "<one short sentence on why this confidence was chosen>"
-}}
-
-Question: {user_question}
-
-Scraped Content:
-{scraped_text}
+Answer (direct fact only, 1-2 sentences max):
 """
 
-# Layer 5: Tavily Live Web Search Prompt
-WEB_SEARCH_PROMPT = """You are an intelligent real-time Question Answering chatbot operating in ONLINE MODE.
+WEB_SCRAPING_PROMPT = WEB_SCRAPING_SYNTHESIS_PROMPT
 
-Your goal is to provide accurate, up-to-date answers based on live web search results from Tavily.
+# Layer 5: Tavily Live Web Search Prompt
+WEB_SEARCH_PROMPT = """SYSTEM PROMPT — LAYER 5: TAVILY REAL-TIME LIVE SEARCH SYNTHESIS (IVIA)
+=============================================================================
+
+You are IVIA, synthesizing a final verified answer from live web search results.
 
 LIVE WEB SEARCH CONTEXT:
 {web_context}
@@ -161,9 +134,10 @@ USER QUESTION:
 {question}
 
 INSTRUCTIONS:
-1. Answer the question using the live web search results provided above.
-2. Be concise, factual, and clear.
-3. Do not invent or assume facts not present in the live search results.
+1. Synthesize a direct, factual, and concise answer grounded exclusively in the provided live web search context.
+2. Do NOT invent information or assume facts not supported by the context.
+3. Do NOT mention internal search layers, retrieval processes, or failures.
+4. Include source references where available.
 
 ANSWER:"""
 
@@ -406,8 +380,32 @@ def get_llm(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Response Cleaning Helper
+# Response Cleaning Helpers
 # ─────────────────────────────────────────────────────────────────────────────
+
+# Regex patterns for meta-retrieval preamble phrases the LLM may leak
+_RETRIEVAL_PREAMBLE_RE = re.compile(
+    r"^(?:"
+    r"based\s+on\s+(?:the\s+)?(?:retrieved\s+(?:chunks?|documents?|context|information|data)|"
+    r"(?:the\s+)?(?:provided|available|given)\s+(?:context|information|data|content)|"
+    r"(?:the\s+)?(?:context|information|documents?|pdf|knowledge\s+base))"
+    r"|according\s+to\s+(?:the\s+)?(?:(?:provided|retrieved|available|given)\s+)?(?:context|document|pdf|text|information|knowledge\s+base|chunks?)"
+    r"|from\s+(?:the\s+)?(?:retrieved|provided|available|given)\s+(?:chunks?|context|information|documents?)"
+    r"|the\s+(?:provided|retrieved|available|given)\s+(?:context|information|documents?|pdf|text)\s+(?:states?|indicates?|shows?|mentions?|suggests?|reveals?|confirms?)"
+    r"|(?:in|from)\s+(?:the\s+)?(?:provided|retrieved|given|available)\s+(?:context|information|documents?|text|pdf)"
+    r")\s*[,.:;]?\s*",
+    re.IGNORECASE
+)
+
+
+def _strip_retrieval_preamble(text: str) -> str:
+    """Remove any leaked meta-retrieval preamble from an LLM answer."""
+    stripped = _RETRIEVAL_PREAMBLE_RE.sub("", text).strip()
+    # Capitalise the first letter if we stripped something
+    if stripped and stripped != text.strip():
+        stripped = stripped[0].upper() + stripped[1:]
+    return stripped if stripped else text.strip()
+
 
 def _clean_llm_response(response, prompt: str) -> str:
     """
@@ -670,9 +668,9 @@ def evaluate_pdf_layer(
     """
     combined_context_parts = []
     if qa_context and qa_context.strip():
-        combined_context_parts.append(f"--- Q&A KNOWLEDGE BASE ---\n{qa_context.strip()}")
+        combined_context_parts.append(qa_context.strip())
     if pdf_context and pdf_context.strip():
-        combined_context_parts.append(f"--- RETRIEVED PDF CHUNKS ---\n{pdf_context.strip()}")
+        combined_context_parts.append(pdf_context.strip())
 
     full_context = "\n\n".join(combined_context_parts)
     if not full_context:
@@ -698,34 +696,58 @@ def evaluate_pdf_layer(
 
     lower_ans = cleaned.lower()
 
-    # Comprehensive refusal / lack-of-information patterns
+    # Comprehensive refusal / evasion detection for PDF layer.
+    # Any of these patterns means the LLM didn't find a real answer
+    # in the provided context -> return None, False to cascade to next layer.
     refusal_patterns = [
         r"\bno_pdf_answer\b",
         r"\bno\s+pdf\s+answer\b",
-        r"\b(?:i['’]?m\s+)?sorry\b.*?\b(?:don['’]?t\s+have|do\s+not\s+have|unable|cannot|no\s+information|insufficient|not\s+enough)\b",
-        r"\b(?:i\s+)?apologize\b.*?\b(?:don['’]?t\s+have|do\s+not\s+have|unable|cannot|no\s+information|insufficient|not\s+enough)\b",
-        r"\b(?:don['’]?t|do\s+not|doesn['’]?t|does\s+not)\s+have\s+(?:enough|sufficient|any|relevant)?\s*information\b",
+        # not aware -- was missing, caused the bug in the screenshot
+        r"\bi.?m\s+not\s+aware\b",
+        r"\bi\s+am\s+not\s+aware\b",
+        r"\bnot\s+aware\s+of\b",
+        # sorry / apologize
+        r"\bi.?m\s+sorry\b",
+        r"\bi\s+am\s+sorry\b",
+        r"\bi\s+apologize\b",
+        # don't have / do not have
+        r"\b(?:i\s+)?(?:don.?t|do\s+not|doesn.?t|does\s+not)\s+have\s+(?:enough|sufficient|any|relevant|the)?\s*(?:access\s+to\s+)?(?:information|data|details?|context)\b",
         r"\b(?:not\s+enough|insufficient|lack\s+of|no\s+relevant|no)\s+information\b",
-        r"\b(?:unable\s+to|cannot|can\s+not|could\s+not|can['’]?t)\s+(?:answer|find|provide|locate|determine)\b",
-        r"\b(?:not\s+found|not\s+mentioned|not\s+provided|not\s+available|not\s+stated|not\s+present|no\s+mention)\s+(?:in|from)\s+(?:the\s+)?(?:document|pdf|context|chunks|text|provided)\b",
-        r"\b(?:context|document|pdf|text)\s+does\s+not\s+(?:contain|mention|provide|state|have)\b",
-        r"\bdoes\s+not\s+(?:contain|mention|provide|state)\s+(?:any|the|enough|information|details)\b",
+        # unable to / cannot / couldn't
+        r"\b(?:i.?m\s+|i\s+am\s+)?unable\s+to\s+(?:answer|find|provide|locate|determine|confirm|verify|access|retrieve)\b",
+        r"\bi\s+(?:can.?t|cannot|could\s+not|couldn.?t)\s+(?:answer|find|provide|locate|determine|confirm|verify|access|retrieve|tell)\b",
+        # not found / not mentioned / not provided in document
+        r"\b(?:not\s+found|not\s+mentioned|not\s+provided|not\s+available|not\s+stated|not\s+present|no\s+mention)\s+(?:in|from)\s+(?:the\s+)?(?:document|pdf|context|chunks|text|provided|information)\b",
+        r"\b(?:context|document|pdf|text|information)\s+does\s+not\s+(?:contain|mention|provide|state|have|include)\b",
+        r"\bdoes\s+not\s+(?:contain|mention|provide|state|include)\s+(?:any|the|enough|information|details?)\b",
+        # no information in context
+        r"\bno\s+(?:relevant|specific|sufficient|available)?\s*(?:information|details?|data)\s+(?:in|from|about|regarding)\b",
     ]
 
     for pat in refusal_patterns:
         if re.search(pat, lower_ans):
             return None, False
 
-    # Hard-reject if response contains clear lack-of-context phrases
+    # Substring fast-path -- no length guard; evasive answers of any length should cascade
     short_evasions = [
-        "unable to find", "could not find", "cannot find", "not available in",
-        "not provided in", "no information", "not mentioned", "not enough information",
+        "unable to find", "could not find", "cannot find",
+        "not available in", "not provided in",
+        "no information", "not mentioned", "not enough information",
         "i don't have enough information", "i do not have enough information",
         "don't have enough information", "do not have enough information",
-        "don't have information", "do not have information", "no mention of"
+        "don't have information", "do not have information",
+        "no mention of",
+        "i'm not aware", "i am not aware", "not aware of",
+        "i'm sorry", "i am sorry", "i apologize",
+        "unable to answer", "unable to provide",
+        "i can't find", "i cannot find", "i could not find",
+        "i can't answer", "i cannot answer",
     ]
-    if any(p in lower_ans for p in short_evasions) and len(cleaned) < 250:
+    if any(p in lower_ans for p in short_evasions):
         return None, False
+
+    # Strip any leaked meta-retrieval preamble the LLM may have generated
+    cleaned = _strip_retrieval_preamble(cleaned)
 
     return cleaned, True
 
@@ -735,14 +757,29 @@ def evaluate_ollama_layer(
     question: str,
     partial_context: str = "",
     backend: str = "ollama",
-    model_name: str = "llama3.2:latest"
+    model_name: str = "llama3.2:latest",
+    is_time_sensitive: bool = False,
+    is_private_domain: bool = False
 ) -> tuple[Optional[str], bool]:
     """
     Evaluates whether Ollama can answer with high confidence without live web search (Layer 2).
 
-    Returns:
-        (answer, True) if confident, or (None, False) if NEEDS_WEB_SEARCH / uncertain.
+    Rules:
+      - Answers general static facts (science, math, history, definitions, tech concepts)
+      - Defers time-sensitive queries (current leaders, latest versions, breaking news) to Layer 3
+      - Avoids fabricating private company/internal data (NextGenPro, IVIA internal)
+      - Returns (answer, True) if confident, or (None, False) if NEEDS_WEB_SEARCH / uncertain.
     """
+    # If the question is explicitly time-sensitive (e.g. current CM, latest version, today)
+    # or asks about private domain info not found in Layer 1, Ollama must not guess.
+    if is_time_sensitive:
+        print("[chatbot] [Layer 2] Query is time-sensitive; delegating to live web search.")
+        return None, False
+
+    if is_private_domain:
+        print("[chatbot] [Layer 2] Query involves private organizational knowledge not found in PDF; skipping general LLM guess.")
+        return None, False
+
     prompt = OLLAMA_KNOWLEDGE_PROMPT.format(
         question=question
     )
@@ -762,29 +799,78 @@ def evaluate_ollama_layer(
 
     lower_ans = cleaned.lower()
 
-    # Check for uncertainty, future events, real-time data needs
+    # Comprehensive uncertainty / evasion / refusal pattern detection.
+    # If ANY of these match, the Ollama layer is treated as unconfident
+    # and the pipeline cascades to web search (Layer 3+).
     uncertainty_patterns = [
+        # Explicit pipeline signals
         r"\bneeds_web_search\b",
         r"\bneeds\s+web\s+search\b",
         r"\bneed(?:s)?\s+(?:live\s+)?web\s+search\b",
-        r"\bi\s+don['’]?t\s+know\b",
+        # I don't / do not know
+        r"\bi\s+don.?t\s+know\b",
         r"\bi\s+do\s+not\s+know\b",
-        r"\b(?:don['’]?t|do\s+not|doesn['’]?t|does\s+not)\s+have\s+(?:enough|sufficient|any|real-time|current|up-to-date)?\s*information\b",
-        r"\brequires?\s+(?:live|real-time|current|recent|updated)\s+information\b",
+        # not aware -- THE BUG FIX: this was completely missing
+        r"\bi.?m\s+not\s+aware\b",
+        r"\bi\s+am\s+not\s+aware\b",
+        r"\bnot\s+aware\s+of\b",
+        # don't have access / information
+        r"\bi\s+don.?t\s+have\s+(?:access|real.time|live|current|up.to.date)",
+        r"\bi\s+do\s+not\s+have\s+(?:access|real.time|live|current|up.to.date)",
+        r"\bdon.?t\s+have\s+(?:the\s+)?(?:specific|exact|precise)?\s*(?:information|data|details?|any)\b",
+        r"\bdo\s+not\s+have\s+(?:enough|sufficient|any|relevant)?\s*information\b",
+        r"\bdoesn.?t\s+have\s+(?:enough|sufficient|any|relevant)?\s*information\b",
+        r"\bdoes\s+not\s+have\s+(?:enough|sufficient|any|relevant)?\s*information\b",
+        # unable to find / provide / answer
+        r"\b(?:i.?m\s+|i\s+am\s+)?unable\s+to\s+(?:find|provide|answer|determine|confirm|verify|access|retrieve|tell)\b",
+        r"\bi\s+can.?t\s+(?:find|provide|answer|determine|confirm|verify|access|retrieve|tell)\b",
+        r"\bi\s+cannot\s+(?:find|provide|answer|determine|confirm|verify|access|retrieve|tell)\b",
+        r"\bi\s+could\s+not\s+(?:find|provide|answer|determine|confirm|verify|access|retrieve|tell)\b",
+        r"\bi\s+couldn.?t\s+(?:find|provide|answer|determine|confirm|verify|access|retrieve|tell)\b",
+        # no information about
+        r"\b(?:no|have\s+no)\s+(?:specific\s+)?(?:information|details?|data|records?)\s+(?:about|on|regarding|for)\b",
+        r"\bnot\s+enough\s+information\b",
+        r"\binsufficient\s+(?:information|data|context)\b",
+        # time / knowledge cutoff
+        r"\brequires?\s+(?:live|real.?time|current|recent|updated)\s+information\b",
         r"\bknowledge\s+cutoff\b",
-        r"\bas\s+an\s+ai\b",
+        r"\btraining\s+(?:data|cutoff)\b",
+        r"\bmy\s+(?:training|knowledge)\s+(?:data\s+)?(?:cutoff|limit|end)\b",
+        r"\bas\s+an?\s+(?:ai|language\s+model|llm)\b",
+        # future events
         r"\bhas\s+not\s+(?:taken\s+place|occurred|happened|been\s+held|been\s+played|finished)\s+yet\b",
         r"\byet\s+to\s+(?:take\s+place|occur|happen|be\s+held|be\s+played)\b",
         r"\bscheduled\s+to\s+(?:take\s+place|be\s+held|happen)\b",
         r"\b(?:cannot|can\s+not|unable\s+to)\s+predict\s+the\s+future\b",
         r"\bfuture\s+event\b",
+        # apologies
+        r"\bi.?m\s+sorry\b",
+        r"\bi\s+am\s+sorry\b",
+        r"\bi\s+apologize\b",
     ]
 
     for pat in uncertainty_patterns:
         if re.search(pat, lower_ans):
             return None, False
 
-    if any(p in lower_ans for p in ["i don't know", "i do not know", "need live web search", "requires current information", "as an ai", "my knowledge cutoff", "cannot predict", "don't have information", "do not have information"]) and len(cleaned) < 200:
+    # Substring fast-path -- catches any variant regardless of response length
+    short_evasions = [
+        "i don't know", "i do not know",
+        "i'm not aware", "i am not aware", "not aware of",
+        "i don't have access", "i do not have access",
+        "i don't have information", "i do not have information",
+        "don't have information", "do not have information",
+        "don't have enough", "do not have enough",
+        "no information about", "no specific information",
+        "unable to find", "unable to provide", "unable to answer",
+        "i can't find", "i cannot find", "i could not find",
+        "i can't provide", "i cannot provide",
+        "i can't answer", "i cannot answer",
+        "need live web search", "requires current information",
+        "as an ai", "my knowledge cutoff", "my training data",
+        "cannot predict", "i'm sorry", "i am sorry", "i apologize",
+    ]
+    if any(p in lower_ans for p in short_evasions):
         return None, False
 
     return cleaned, True
@@ -799,18 +885,19 @@ def evaluate_scraping_layer(
     min_confidence: float = 0.75
 ) -> tuple[Optional[str], bool, float]:
     """
-    Evaluates and synthesizes an answer from scraped web pages (Layer 4) using JSON output format.
+    Evaluates and synthesizes a concise, summarized answer from scraped web pages (Layer 4)
+    using WEB_SCRAPING_SYNTHESIS_PROMPT.
 
     Returns:
         (answer, True, confidence) if accepted (confidence >= min_confidence),
-        or (None, False, confidence) if insufficient/below threshold.
+        or (None, False, confidence) if insufficient, refusal, or NEEDS_WEB_SEARCH.
     """
     if not scraped_context or not scraped_context.strip():
         return None, False, 0.0
 
-    prompt = WEB_SCRAPING_PROMPT.format(
-        user_question=question,
-        scraped_text=scraped_context
+    prompt = WEB_SCRAPING_SYNTHESIS_PROMPT.format(
+        question=question,
+        scraped_content=scraped_context
     )
 
     raw_response = invoke_llm_with_oom_retry(
@@ -826,53 +913,46 @@ def evaluate_scraping_layer(
     if not cleaned:
         return None, False, 0.0
 
-    parsed_json = None
-
-    # Attempt 1: Direct JSON parsing
-    try:
-        parsed_json = json.loads(cleaned)
-    except Exception:
-        pass
-
-    # Attempt 2: Extract JSON from markdown code block or curly braces
-    if not parsed_json or not isinstance(parsed_json, dict):
-        match = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", cleaned, re.IGNORECASE)
-        if match:
-            try:
-                parsed_json = json.loads(match.group(1))
-            except Exception:
-                pass
-
-    if not parsed_json or not isinstance(parsed_json, dict):
-        match = re.search(r"(\{[\s\S]*\})", cleaned)
-        if match:
-            try:
-                parsed_json = json.loads(match.group(1))
-            except Exception:
-                pass
-
-    # Process parsed JSON
-    if isinstance(parsed_json, dict):
-        answer = str(parsed_json.get("answer", "")).strip()
-        try:
-            confidence = float(parsed_json.get("confidence", 0.0))
-        except (ValueError, TypeError):
-            confidence = 0.0
-
-        if answer and confidence >= min_confidence:
-            return answer, True, confidence
-        elif answer and confidence < min_confidence:
-            print(f"[chatbot] Layer 4 synthesized answer rejected: confidence {confidence:.2f} < {min_confidence:.2f}")
-            return None, False, confidence
-        else:
-            return None, False, confidence
-
-    # Fallback if model returned plain text despite JSON instruction
     lower_ans = cleaned.lower()
-    if "insufficient" in lower_ans or "cannot answer" in lower_ans or len(cleaned) < 30:
+
+    # 1. Check for explicit Layer 4 signal to cascade to Layer 5
+    if "needs_web_search" in lower_ans or "needs web search" in lower_ans:
+        print("[chatbot] [Layer 4] Model returned NEEDS_WEB_SEARCH. Proceeding to Layer 5.")
         return None, False, 0.0
 
-    # If it returned a direct, substantial text answer, accept with baseline confidence
+    # 2. Check for refusal / evasion patterns
+    refusal_patterns = [
+        r"\bneeds_web_search\b",
+        r"\bi\s+(?:don.?t|do\s+not)\s+know\b",
+        r"\bnot\s+(?:mentioned|found|available|provided|stated)\s+in\s+the\s+(?:scraped|provided|web|text|content)\b",
+        r"\b(?:unable|cannot|can\s+not|could\s+not)\s+to?\s*(?:find|determine|answer|verify)\b",
+        r"\binsufficient\s+(?:information|content|data)\b",
+        r"\bno\s+(?:information|details?)\s+(?:found|available|provided)\b",
+    ]
+    for pat in refusal_patterns:
+        if re.search(pat, lower_ans):
+            print(f"[chatbot] [Layer 4] Refusal pattern matched: {pat}. Proceeding to Layer 5.")
+            return None, False, 0.0
+
+    short_evasions = [
+        "unable to find", "could not find", "cannot find",
+        "not available in the", "not provided in the", "no information",
+        "not mentioned in the", "not enough information", "i don't have enough",
+        "i'm not aware", "i am not aware", "i'm sorry", "i apologize",
+    ]
+    if any(p in lower_ans for p in short_evasions):
+        return None, False, 0.0
+
+    # 3. Strip any preamble or artifacts
+    cleaned = _strip_retrieval_preamble(cleaned)
+    if cleaned.lower().startswith("answer:"):
+        cleaned = cleaned[len("answer:"):].strip()
+    elif cleaned.lower().startswith("final answer:"):
+        cleaned = cleaned[len("final answer:"):].strip()
+
+    if len(cleaned) < 15:
+        return None, False, 0.0
+
     return cleaned, True, min_confidence
 
 
