@@ -37,9 +37,9 @@ from vector_store import (
     CHROMA_DB_DIR, FAISS_INDEX_DIR
 )
 from chatbot import (
-    get_llm, get_qa_chain, answer_from_text, answer_pretrained,
+    get_llm, get_qa_chain, answer_from_text, answer_pretrained, answer_creative,
     _clean_llm_response, RAG_PROMPT_TEMPLATE, SYSTEM_PROMPT, WEB_SEARCH_PROMPT,
-    format_error_message, invoke_llm_with_oom_retry,
+    PURE_CREATIVE_PROMPT, format_error_message, invoke_llm_with_oom_retry,
     evaluate_pdf_layer, evaluate_ollama_layer, evaluate_scraping_layer, evaluate_tavily_layer
 )
 from translator import (
@@ -47,7 +47,7 @@ from translator import (
     is_translation_request, translate_direct_request
 )
 from qa_knowledge import QAKnowledgeBase
-from question_processor import analyze_question
+from question_processor import analyze_question, is_creative_query
 from tavily_search import TavilySearcher, is_online
 from google_search import GoogleSearcher
 from web_scraper import WebScraper
@@ -324,6 +324,15 @@ class RAGSystem:
         # Use normalized question for all subsequent lookups
         search_question = analysis["normalized_question"] if analysis["normalized_question"] else search_question
 
+        # Check creative/fictional request
+        if analysis.get("is_creative") or is_creative_query(search_question):
+            creative_ans = answer_creative(
+                self.llm, question=search_question, backend=self.backend_name, model_name=self.model_name
+            )
+            if is_ml:
+                return translate_text(creative_ans, target_lang="ml", source_lang="en", llm=self.llm)
+            return creative_ans
+
         # 1. Check Q&A Knowledge Base for direct match first (bypasses LLM call)
         direct_qa = self.qa_kb.get_direct_match(search_question)
         if direct_qa:
@@ -377,6 +386,15 @@ class RAGSystem:
             return correction
         # Use normalized question for all subsequent lookups
         search_question = analysis["normalized_question"] if analysis["normalized_question"] else search_question
+
+        # Check creative/fictional request
+        if analysis.get("is_creative") or is_creative_query(search_question):
+            creative_ans = answer_creative(
+                self.llm, question=search_question, backend=self.backend_name, model_name=self.model_name
+            )
+            if is_ml:
+                return translate_text(creative_ans, target_lang="ml", source_lang="en", llm=self.llm)
+            return creative_ans
 
         # 1. Check Q&A Knowledge Base for direct match first (bypasses LLM call)
         direct_qa = self.qa_kb.get_direct_match(search_question)
@@ -543,6 +561,27 @@ class RAGSystem:
                 "mode": "offline",
                 "confidence": 0.0,
                 "sources": []
+            }
+
+        # 0c. Pure Creative / Fictional request routing (Bypasses PDF, Ollama RAG, and Web Search)
+        if analysis.get("is_creative") or is_creative_query(english_question):
+            print(f"[rag] [Creative] Fictional/creative request detected: '{english_question}'. Routing directly to PURE_CREATIVE_PROMPT.")
+            creative_ans = answer_creative(
+                self.llm,
+                question=english_question,
+                backend=self.backend_name,
+                model_name=self.model_name
+            )
+            if is_ml:
+                creative_ans = translate_text(creative_ans, target_lang="ml", source_lang="en", llm=self.llm)
+            return {
+                "answer": creative_ans,
+                "source_type": "creative",
+                "mode": "offline",
+                "confidence": 1.0,
+                "sources": [],
+                "is_translated": is_ml,
+                "original_question": question
             }
 
         # =========================================================================

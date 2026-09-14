@@ -214,9 +214,11 @@ def detect_intent(text: str) -> str:
         return "current"
     if re.search(r"\bwho is\b|\bwho are\b|\bwho was\b", t_lower):
         return "role_holder"
+    if is_creative_query(text):
+        return "creative"
     return "general"
 
-
+ 
 def validate_entity_role(
     entity: Optional[str],
     entity_type: Optional[str],
@@ -307,6 +309,32 @@ def is_private_domain_query(text: str) -> bool:
     return any(re.search(pat, t_lower) for pat in private_patterns)
 
 
+def is_creative_query(text: str) -> bool:
+    """
+    Detects if the query asks for fictional, imaginative, or creative content
+    (e.g., stories, poems, jokes, scripts, fairy tales, riddles, roleplay).
+    """
+    if not text:
+        return False
+    t_lower = text.lower()
+    creative_patterns = [
+        # Stories / Tales / Fables
+        r"\b(?:write|tell|narrate|create|generate|make\s+up|invent|give\s+me)\s+(?:me\s+)?(?:a\s+|an\s+)?(?:short\s+|fictional\s+|bedtime\s+|moral\s+|funny\s+|fantasy\s+|children.?s\s+)?(?:story|tale|fable|parable|myth|legend)\b",
+        r"\b(?:bedtime|short|fictional|moral)\s+story\b",
+        r"\bonce\s+upon\s+a\s+time\b",
+        # Poems / Lyrics / Rhymes
+        r"\b(?:write|compose|generate|recite)\s+(?:me\s+)?(?:a\s+|an\s+)?(?:poem|poetry|rhyme|haiku|sonnet|limerick|song|lyrics)\b",
+        # Jokes / Riddles
+        r"\b(?:tell|write|crack)\s+(?:me\s+)?(?:a\s+|some\s+)?(?:joke|jokes|riddle|riddles|pun|puns)\b",
+        # Plays / Scripts / Dialogues / Fiction
+        r"\b(?:write|draft|create)\s+(?:a\s+|an\s+)?(?:script|screenplay|dialogue|skit|play|drama|fiction)\b",
+        # Creative / Imaginative prompts
+        r"\b(?:creative\s+writing|creative\s+story|fictional\s+writing)\b",
+        r"\b(?:imagine|pretend)\s+(?:that|you\s+are|a\s+world|an?\s+scenario)\b",
+    ]
+    return any(re.search(pat, t_lower) for pat in creative_patterns)
+
+
 def analyze_question(raw_question: str) -> Dict[str, Any]:
     """
     Full Question Analysis Pipeline.
@@ -320,6 +348,7 @@ def analyze_question(raw_question: str) -> Dict[str, Any]:
       6. validate_entity_role()    — check role vs entity_type validity
       7. is_time_sensitive_query() — detect temporal/freshness requirements
       8. is_private_domain_query() — detect private organizational queries
+      9. is_creative_query()       — detect fictional/creative generation requests
 
     Returns:
       dict with keys:
@@ -334,6 +363,7 @@ def analyze_question(raw_question: str) -> Dict[str, Any]:
         - correction_response  (str | None)  → non-None means return this immediately
         - is_time_sensitive    (bool)
         - is_private_domain    (bool)
+        - is_creative          (bool)
     """
     normalized = normalize_text(raw_question)
     entity, entity_type = detect_entity(normalized)
@@ -342,6 +372,7 @@ def analyze_question(raw_question: str) -> Dict[str, Any]:
     intent = detect_intent(normalized)
     time_sensitive = is_time_sensitive_query(normalized)
     private_domain = is_private_domain_query(normalized)
+    creative = is_creative_query(normalized)
 
     is_valid, correction = validate_entity_role(entity, entity_type, role)
 
@@ -356,6 +387,7 @@ def analyze_question(raw_question: str) -> Dict[str, Any]:
         "is_valid_combination": is_valid,
         "correction_response": correction,
         "is_time_sensitive": time_sensitive,
-        "is_private_domain": private_domain
+        "is_private_domain": private_domain,
+        "is_creative": creative
     }
 

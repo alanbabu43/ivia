@@ -49,6 +49,22 @@ except ImportError:
 # Multi-Layer Pipeline Prompts (5-Layer Sequential Fallback Architecture)
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Creative / Fictional Content Generation Prompt (IVIA)
+PURE_CREATIVE_PROMPT = """You are IVIA, a creative writing assistant.
+
+The user has asked for fictional/creative content. Write it directly and imaginatively.
+
+STRICT RULES:
+1. Do NOT use any names, roles, companies, or facts unless the user explicitly mentioned them in their request.
+2. If characters need names and the user didn't specify any, invent simple, generic, clearly fictional names yourself (e.g., common animal-story names, or descriptive names like "the elephant" and "the crow").
+3. Do NOT reference NextGenPro, IVIA, staff members, or any organizational/document data — this is a pure creative request, unrelated to any uploaded documents or company records.
+4. Do NOT mention documents, PDFs, retrieval, or context of any kind.
+
+USER REQUEST:
+{question}
+
+RESPONSE:"""
+
 # Layer 1: PDF Knowledge Base Evaluation Prompt (IVIA)
 PDF_QA_PROMPT = """You are IVIA, an intelligent assistant. Answer the user's question directly and naturally using the information provided below.
 
@@ -642,6 +658,27 @@ def answer_pretrained(
         prompt=prompt,
         question=question,
         qa_context=qa_context,
+        context="",
+        backend=backend,
+        model_name=model_name
+    )
+
+
+def answer_creative(
+    llm: Any,
+    question: str,
+    backend: str = "ollama",
+    model_name: str = "llama3.2:latest"
+) -> str:
+    """
+    Answers a creative or fictional writing request directly without document retrieval.
+    Uses PURE_CREATIVE_PROMPT to ensure no document data, names, or corporate references leak.
+    """
+    prompt = PURE_CREATIVE_PROMPT.format(question=question)
+    return invoke_llm_with_oom_retry(
+        llm=llm,
+        prompt=prompt,
+        question=question,
         context="",
         backend=backend,
         model_name=model_name
