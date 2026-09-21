@@ -57,6 +57,7 @@ load_dotenv()
 # Confidence thresholds for each layer
 THRESHOLD_PDF = float(os.getenv("THRESHOLD_PDF", "0.80"))
 THRESHOLD_OLLAMA = float(os.getenv("THRESHOLD_OLLAMA", "0.85"))
+PDF_RELEVANCE_THRESHOLD = float(os.getenv("PDF_RELEVANCE_THRESHOLD", "0.55"))
 THRESHOLD_SCRAPING = float(os.getenv("THRESHOLD_SCRAPING", "0.75"))
 THRESHOLD_TAVILY = float(os.getenv("THRESHOLD_TAVILY", "0.70"))
 
@@ -617,47 +618,70 @@ class RAGSystem:
             pdf_context = ""
             source_docs = []
 
-            if self.retriever and self.db:
+            if self.db:
                 try:
-                    sem_docs = self.retriever.invoke(english_question)
-                    query_words = [w.lower() for w in re.findall(r'\b[a-zA-Z0-9_-]{3,}\b', english_question)]
-                    boosted_docs = []
-                    other_docs = []
-                    seen_contents = set()
+                    top_k = int(os.getenv("RAG_TOP_K", "6"))
 
-                    for doc in sem_docs:
-                        c = doc.page_content
-                        if c in seen_contents:
-                            continue
-                        seen_contents.add(c)
-                        c_lower = c.lower()
-                        match_count = sum(1 for w in query_words if w in c_lower)
-                        if match_count >= 1:
-                            boosted_docs.append((match_count, doc))
-                        else:
-                            other_docs.append(doc)
+                    scored_results = self.db.similarity_search_with_relevance_scores(
+                        english_question,
+                        k=top_k
+                    )
 
-                    boosted_docs.sort(key=lambda x: x[0], reverse=True)
-                    ordered_docs = [d for _, d in boosted_docs] + other_docs
-                    source_docs = ordered_docs
+                    print("[rag] [Layer 1] PDF retrieval scores:")
 
-                    if source_docs:
-                        max_context_chars = int(os.getenv("RAG_MAX_CONTEXT_CHARS", "5000"))
+                    relevant_results = []
+
+                    for doc, score in scored_results:
+                        source = doc.metadata.get("source", "Unknown")
+
+                        print(
+                            f"[rag] [Layer 1] score={score:.4f} "
+                            f"source={source}"
+                        )
+
+                        if score >= PDF_RELEVANCE_THRESHOLD:
+                            relevant_results.append((doc, score))
+
+                    if relevant_results:
+                        source_docs = [doc for doc, score in relevant_results]
+
+                        max_context_chars = int(
+                            os.getenv("RAG_MAX_CONTEXT_CHARS", "5000")
+                        )
+
                         context_parts = []
                         total_chars = 0
+
                         for doc in source_docs:
                             if total_chars + len(doc.page_content) > max_context_chars:
                                 remaining = max_context_chars - total_chars
+
                                 if remaining > 100:
                                     context_parts.append(doc.page_content[:remaining])
+
                                 break
+
                             context_parts.append(doc.page_content)
                             total_chars += len(doc.page_content)
+
                         pdf_context = "\n\n".join(context_parts)
+
+                        print(
+                            f"[rag] [Layer 1] {len(source_docs)} PDF chunks "
+                            f"passed relevance threshold "
+                            f"{PDF_RELEVANCE_THRESHOLD:.2f}"
+                        )
+
+                    else:
+                        print(
+                            f"[rag] [Layer 1] No PDF chunks passed relevance "
+                            f"threshold {PDF_RELEVANCE_THRESHOLD:.2f}"
+                        )
+
                 except Exception as e:
                     print(f"[rag] [Layer 1] Vector retrieval warning: {e}")
 
-            if pdf_context or qa_context:
+            if pdf_context:
                 pdf_ans, is_accepted = evaluate_pdf_layer(
                     self.llm,
                     question=english_question,
